@@ -30,4 +30,50 @@ router.get('/', function (req, res) {
   return res.json(films);
 });
 
+router.get('/:id', (req, res) => {
+
+const indexOfFilmFound = films.findIndex((film) => film.id == req.params.id);
+
+if(indexOfFilmFound < 0) return res.sendStatus(404);
+
+res.json(films[indexOfFilmFound]);
+});
+
+router.get('/', (req, res, next) => {
+  const orderByDuration =
+    req?.query?.minimum-duration?.includes('duration') ? req.query['minimum-duration'] : undefined;
+  let orderedFilms;
+  console.log(`order by ${orderByDuration ?? 'not requested'}`);
+  if (orderByDuration) orderedFilms = [...films].sort((a, b) => a.duration.localeCompare(b.duration));
+  if (orderByDuration === '-duration') orderedFilms = orderedFilms.reverse();
+
+  console.log('GET /films');
+  return res.json(orderedFilms ?? films);
+});
+
+router.post('/', (req, res) => {
+  const title = req?.body?.title?.length !== 0 ? req.body.title : undefined;
+  const duration = req?.body?.duration?.length !== 0 ? req.body.duration : undefined;
+  const budget = req?.body?.budget?.length !== 0 ? req.body.budget : undefined;
+  const link = req?.body?.link?.length !== 0 ? req.body.link : undefined;
+
+  if(!title || !duration || !budget || !link) return res.sendStatus(400);
+
+  const lastIndex = films?.length !== 0 ? films.length - 1 : undefined;
+  const lastId = lastIndex !== undefined ? films[lastIndex]?.id : 0;
+  const nextId = lastId + 1;
+  
+  const newFilm = {
+    id: nextId,
+    title: title,
+    duration: duration,
+    budget: budget,
+    link: link,
+  }
+
+  films.push(newFilm);
+
+  res.json(newFilm);
+});
+
 module.exports = router;

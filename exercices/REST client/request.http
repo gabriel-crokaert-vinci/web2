@@ -1,9 +1,17 @@
-### create a pizza
-Send Request
-POST http://localhost:3000/pizzas
+### Cnoreate a film
+@baseUrl = http://localhost:3000
+POST {{baseUrl}}/films
 Content-Type: application/json
 
 {
-    "title":"Magic green",
-    "content":"Epinards, Brocolis,  Olives vertes, Basilic"
-}
+    "title": "Nouveau film",
+    "duration": 242,
+    "budget": 70,
+    "link": "https://en.wikipedia.org/wiki/Zack_Snyder%27s_Justice_League"
+  }
+
+### READ all films
+GET {{baseUrl}}/films
+
+### Read all sorted films by duration (ascending)
+GET {{baseUrl}}/films/?order=duration 
