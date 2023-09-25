@@ -1,0 +1,9 @@
+### create a pizza
+Send Request
+POST http://localhost:3000/pizzas
+Content-Type: application/json
+
+{
+    "title":"Magic green",
+    "content":"Epinards, Brocolis,  Olives vertes, Basilic"
+}
