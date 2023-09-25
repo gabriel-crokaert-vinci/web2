@@ -1,5 +1,6 @@
 {
-  "name": "basic-generated-app",
+  "name": "exercise-1.1",
+  "description": "Exercice 1.1 : lecture de toutes les ressources",
   "version": "0.0.0",
   "private": true,
   "scripts": {
