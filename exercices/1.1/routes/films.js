@@ -1,36 +1,12 @@
-var express = require('express');
+const express = require('express');
+const {parse, serialize} = require('../utils/json')
 var router = express.Router();
 
-const films = [
-  {
-    id: 1,
-    title: 'Star Wars: The Phantom Menace (Episode I)',
-    duration: 136,
-    budget: '115',
-    link: 'https://en.wikipedia.org/wiki/Star_Wars:_Episode_I_%E2%80%93_The_Phantom_Menace',
-  },
-  {
-    id: 2,
-    title: 'Star Wars: Episode II – Attack of the Clones',
-    duration: 142,
-    budget: 115,
-    link: 'https://en.wikipedia.org/wiki/Star_Wars:_Episode_II_%E2%80%93_Attack_of_the_Clones',
-  },
-  {
-    id: 3,
-    title: "Zack Snyder's Justice League",
-    duration: 242,
-    budget: 70,
-    link: 'https://en.wikipedia.org/wiki/Zack_Snyder%27s_Justice_League',
-  },
-];
+const jsonDbPath = __dirname + '/../data/films.json'
 
-// Read all the films
-router.get('/', function (req, res) {
-  return res.json(films);
-});
 
 router.get('/:id', (req, res) => {
+const films = parse(jsonDbPath, affiches);
 
 const indexOfFilmFound = films.findIndex((film) => film.id == req.params.id);
 
@@ -40,15 +16,31 @@ res.json(films[indexOfFilmFound]);
 });
 
 router.get('/', (req, res, next) => {
-  const orderByDuration =
-    req?.query?.minimum-duration?.includes('duration') ? req.query['minimum-duration'] : undefined;
-  let orderedFilms;
-  console.log(`order by ${orderByDuration ?? 'not requested'}`);
-  if (orderByDuration) orderedFilms = [...films].sort((a, b) => a.duration.localeCompare(b.duration));
-  if (orderByDuration === '-duration') orderedFilms = orderedFilms.reverse();
+  const films = parse(jsonDbPath, affiches);
+  const filterByDuration = req?.query?.['minimum-duration'] ? parseInt(req.query['minimum-duration']) : undefined;
+
+  let filteredFilms;
+  console.log(`order by ${filterByDuration ?? 'not requested'}`);
+
+  if (isNaN(filterByDuration)){
+    return res.status(400).json({ error: 'Invalid minimum'})
+  }
+
+  if(filterByDuration !== undefined){
+    filteredFilms = films.filter(film => film.duration >= filterByDuration);
+  }
+
+  /*if (orderByDuration) {
+    if (orderByDuration < 0) {
+      orderedFilms = [...films].sort((b, a) => Math.abs(a['minimum-duration']) - Math.abs(b['minimum-duration']));
+    } else {
+      orderedFilms = [...films].sort((a, b) => Math.abs(a['minimum-duration']) - Math.abs(b['minimum-duration']));
+    }
+  }*/
 
   console.log('GET /films');
-  return res.json(orderedFilms ?? films);
+  return res.json(filteredFilms ?? films);
+
 });
 
 router.post('/', (req, res) => {
@@ -59,6 +51,7 @@ router.post('/', (req, res) => {
 
   if(!title || !duration || !budget || !link) return res.sendStatus(400);
 
+  const films = parse(jsonDbPath, affiches);
   const lastIndex = films?.length !== 0 ? films.length - 1 : undefined;
   const lastId = lastIndex !== undefined ? films[lastIndex]?.id : 0;
   const nextId = lastId + 1;
@@ -72,6 +65,8 @@ router.post('/', (req, res) => {
   }
 
   films.push(newFilm);
+
+  serialize(jsonDbPath, films)
 
   res.json(newFilm);
 });

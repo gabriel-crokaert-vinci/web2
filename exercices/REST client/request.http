@@ -5,13 +5,14 @@ Content-Type: application/json
 
 {
     "title": "Nouveau film",
-    "duration": 242,
-    "budget": 70,
-    "link": "https://en.wikipedia.org/wiki/Zack_Snyder%27s_Justice_League"
+    "duration": 100,
+    "budget": 30,
+    "link": "https://nouveau.film"
   }
 
 ### READ all films
 GET {{baseUrl}}/films
 
 ### Read all sorted films by duration (ascending)
-GET {{baseUrl}}/films/?order=duration 
+GET {{baseUrl}}/films/?minimum-duration=1
+
